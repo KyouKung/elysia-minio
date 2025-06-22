@@ -1,0 +1,13 @@
+model Users {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  firstName      String
+  lastName       String
+  email          String
+  pictureProfile String?
+
+  userFiles UserFiles[]
+
+  @@map("users")
+}
