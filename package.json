@@ -2,14 +2,44 @@
   "name": "elysia-minio",
   "version": "1.0.50",
   "scripts": {
+    "db:migrate:dev": "bun run prisma migrate dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun --watch ./src/app.ts",
+    "format": "bun run prisma format",
+    "generate": "bun run format && bun run prisma generate"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@aws-sdk/client-s3": "^3.832.0",
+    "@aws-sdk/s3-request-presigner": "^3.832.0",
+    "@elysiajs/cors": "^1.3.3",
+    "@elysiajs/swagger": "^1.3.0",
+    "@google-cloud/storage": "^7.16.0",
+    "@prisma/client": "^6.10.1",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
+    "elysia": "latest",
+    "minio": "^8.0.5",
+    "prismabox": "^1.1.24"
+  },
+  "prisma": {
+    "schema": "./prisma"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "prisma": "^6.10.1",
+    "@eslint/js": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0"
   },
-  "module": "src/index.js"
+  "module": "src/app.ts",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 80
+  }
 }
