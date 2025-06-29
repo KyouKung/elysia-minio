@@ -1,12 +1,11 @@
 import { Elysia } from 'elysia'
-import UploadController from './controller/upload.http.controller'
-import { UploadService } from './application/upload.service'
+import UploadHttpController from './commands/upload/upload.http.controller'
 
 const UploadModule = new Elysia({
   name: 'UploadModule',
   prefix: 'v1',
   tags: ['v1', 'Upload'],
-}).use(UploadController)
+}).use(UploadHttpController)
 
 export default UploadModule
-export { UploadService }
+export { UploadModule }
