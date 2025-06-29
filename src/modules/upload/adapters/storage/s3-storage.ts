@@ -4,25 +4,31 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { FileStorage } from '../../core/ports/file-storage'
+import { type FileStorage } from '../../core/ports/file-storage'
 import { generateRandomFromDateTime } from '../../libs/utils/generate-random-from-date-time'
 
 export class S3Storage implements FileStorage {
   private s3: S3Client
+
   private bucket: string
 
-  constructor() {
+  constructor(config: {
+    region: string
+    accessKeyId: string
+    secretAccessKey: string
+    bucket: string
+  }) {
     this.s3 = new S3Client({
-      region: Bun.env.AWS_REGION,
+      region: config.region,
       credentials: {
-        accessKeyId: Bun.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: Bun.env.AWS_SECRET_ACCESS_KEY!,
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
       },
     })
     this.bucket = Bun.env.AWS_BUCKET!
   }
 
-  async uploadOne(file: File, subFolder: string, organizationId: number) {
+  async uploadOne(file: File, organizationId: string, subFolder?: string) {
     const subFolderName = subFolder || 'uploads'
     const newFileName = generateRandomFromDateTime()
     const buffer = Buffer.from(await file.arrayBuffer())
@@ -53,9 +59,9 @@ export class S3Storage implements FileStorage {
     }
   }
 
-  async uploadMany(files: File[], subFolder: string, organizationId: number) {
+  async uploadMany(files: File[], organizationId: string, subFolder?: string) {
     return Promise.all(
-      files.map((file) => this.uploadOne(file, subFolder, organizationId)),
+      files.map((file) => this.uploadOne(file, organizationId, subFolder)),
     )
   }
 }

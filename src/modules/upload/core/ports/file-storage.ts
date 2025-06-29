@@ -1,25 +1,20 @@
 export interface FileStorage {
   uploadOne(
     file: File,
-    subFolder: string,
-    organizationId: number,
-  ): Promise<{
-    originalName: string
-    fileUrl: string
-    fileType: string
-    filePath: string
-  }>
-
+    organizationId: string,
+    subFolder?: string,
+  ): Promise<UploadedFile>
   uploadMany(
     files: File[],
-    subFolder: string,
-    organizationId: number,
-  ): Promise<
-    {
-      originalName: string
-      fileUrl: string
-      fileType: string
-      filePath: string
-    }[]
-  >
+    organizationId: string,
+    subFolder?: string,
+  ): Promise<UploadedFile[]>
+  getPresignedUrl?(filePath: string, expiration: number): Promise<string>
+}
+
+export interface UploadedFile {
+  originalName: string
+  fileUrl: string
+  fileType: string
+  filePath: string
 }

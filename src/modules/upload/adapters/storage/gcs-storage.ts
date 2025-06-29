@@ -1,28 +1,37 @@
 import { Storage } from '@google-cloud/storage'
-import { FileStorage } from '../../core/ports/file-storage'
+import { type FileStorage } from '../../core/ports/file-storage'
 import { generateRandomFromDateTime } from '../../libs/utils/generate-random-from-date-time'
 
 export class GCSStorage implements FileStorage {
   private storage: Storage
+
   private bucketName: string
+
   private gcsServiceAccount: {
     client_email: string
     private_key: string
   }
 
-  constructor() {
-    this.gcsServiceAccount = JSON.parse(Bun.env.GCS_SERVICE_ACCOUNT!)
+  constructor(config: {
+    projectId: string
+    bucket: string
+    credentials: {
+      client_email: string
+      private_key: string
+    }
+  }) {
+    this.gcsServiceAccount = config.credentials
     this.storage = new Storage({
-      projectId: Bun.env.GCS_PROJECT_ID,
+      projectId: config.projectId,
       credentials: {
         client_email: this.gcsServiceAccount.client_email,
         private_key: this.gcsServiceAccount.private_key,
       },
     })
-    this.bucketName = Bun.env.GCS_BUCKET_NAME!
+    this.bucketName = config.bucket
   }
 
-  async uploadOne(file: File, subFolder: string, organizationId: number) {
+  async uploadOne(file: File, organizationId: string, subFolder?: string) {
     const subFolderName = subFolder || 'uploads'
     const newFileName = generateRandomFromDateTime()
     const buffer = Buffer.from(await file.arrayBuffer())
@@ -47,9 +56,9 @@ export class GCSStorage implements FileStorage {
     }
   }
 
-  async uploadMany(files: File[], subFolder: string, organizationId: number) {
+  async uploadMany(files: File[], organizationId: string, subFolder?: string) {
     return Promise.all(
-      files.map((file) => this.uploadOne(file, subFolder, organizationId)),
+      files.map((file) => this.uploadOne(file, organizationId, subFolder)),
     )
   }
 }
